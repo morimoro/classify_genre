@@ -12,9 +12,12 @@ from gensim import corpora
 w_list = []
 labels = []
 
-with open('test.txt', 'r', encoding='UTF-8') as f:
-    w = f.read().replace('\u3000','').replace('\n','')
-    w_list.append(w)
+f_list = os.listdir("./text/")
+
+for lists in f_list:
+    with open("./text/"+ lists, 'r', encoding='UTF-8') as f:
+        w = f.read().replace('\u3000','').replace('\n','')
+        w_list.append(w)
 
 mecab = MeCab.Tagger('mecabrc')
 
@@ -38,12 +41,23 @@ def get_words_main(content):
     return [token for token in tokenize(content)]
 
 words = get_words(w_list)
-print(words[0])
+# print(words[0])
 
 dictionary = corpora.Dictionary(words)
-dictionary.filter_extremes(no_below = 200, no_above = 0.2)
+dictionary.filter_extremes(no_below = 3, no_above = 0.5)
+# チューニング
+# no_below : 単語が使われている文章の数が設定値未満の時、その単語を削除
+# no_above : 単語が使われている文章の割合が設定値以上のとき、その単語を削除
+
 #dictionary.save_as_text("./tmp/dictionary.txt") で、作成した辞書を保存可能
 #dictionary = corpora.Dictionary.load_from_text("./tmp/dictionary.txt") で読み込み
 courpus = [dictionary.doc2bow(word) for word in words]
 
 print(courpus)
+
+from gensim import matutils
+
+def vec2dense(vec, num_terms):
+    return list(matutils.corpus2dense([vec], num_terms=num_terms).T[0])
+data_all = [vec2dense(dictionary.doc2bow(words[i]),len(dictionary)) for i in range(len(words))]
+print(data_all)
