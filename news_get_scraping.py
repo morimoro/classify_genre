@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup
 import csv
 
 # 環境ビジネスのURLを読み込み
-url = "https://www.kankyo-business.jp/solar/news"
+# url = "https://www.kankyo-business.jp/solar/news"
+url = "https://www.kankyo-business.jp/solar/news/index2212"
 r = requests.get(url)
 soup = BeautifulSoup(r.text, "html.parser")
 
@@ -17,8 +18,10 @@ for elem_news in elems_news:
     title_list.append(elem_news.get_text(strip=True))
 
 # 保存するcsvのパス
-csv_path = "test.csv"
-with open(csv_path, 'w', newline='') as file:
+csv_path = "環境ビジネス2022年12月.csv"
+
+# csvを開いて、書き込み
+with open(csv_path, 'w', newline='', encoding='utf_8_sig') as file:
     writer = csv.writer(file)
     writer.writerow(["No.", "Title", "Text"])
 
